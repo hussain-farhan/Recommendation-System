@@ -72,7 +72,7 @@ export function LandingPage() {
             <a href="#contact" className="pm-link-btn">
               Sign In
             </a>
-            <Link to="/dashboard" className="pm-btn pm-btn--solid">
+            <Link to="/onboarding" className="pm-btn pm-btn--solid">
               Get Started
             </Link>
           </div>
@@ -107,7 +107,7 @@ export function LandingPage() {
           <a href="#contact" className="pm-link-btn pm-drawer__link" onClick={closeMobile}>
             Sign In
           </a>
-          <Link to="/dashboard" className="pm-btn pm-btn--solid pm-btn--block" onClick={closeMobile}>
+          <Link to="/onboarding" className="pm-btn pm-btn--solid pm-btn--block" onClick={closeMobile}>
             Get Started
           </Link>
         </div>
@@ -136,7 +136,7 @@ export function LandingPage() {
             </p>
 
             <div className="pm-hero__ctas">
-              <Link to="/dashboard" className="pm-btn pm-btn--gradient">
+            <Link to="/onboarding" className="pm-btn pm-btn--gradient">
                 Start Your Journey <span aria-hidden="true">→</span>
               </Link>
               <Link to="/projects" className="pm-btn pm-btn--outline">

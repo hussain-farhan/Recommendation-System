@@ -19,24 +19,24 @@
   --prs-glow: 0 8px 20px rgba(61, 90, 239, 0.25);
   --prs-radius: 12px;
   --prs-font: 'DM Sans', system-ui, 'Segoe UI', sans-serif;
+  color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --prs-text: #eef1f8;
-    --prs-muted: #9aa3b8;
-    --prs-border: #2a3145;
-    --prs-surface: #151923;
-    --prs-bg-subtle: #0e1118;
-    --prs-primary: #7c8ef5;
-    --prs-primary-soft: #a5b2ff;
-    --prs-primary-faint: rgba(124, 142, 245, 0.15);
-    --prs-accent-warm: #e8953a;
-    --prs-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
-    --prs-shadow-md: 0 8px 28px rgba(0, 0, 0, 0.45);
-    --prs-shadow-lg: 0 24px 56px rgba(0, 0, 0, 0.55);
-    --prs-glow: 0 8px 24px rgba(124, 142, 245, 0.2);
-  }
+:root[data-prs-theme='dark'] {
+  --prs-text: #eef1f8;
+  --prs-muted: #9aa3b8;
+  --prs-border: #2a3145;
+  --prs-surface: #151923;
+  --prs-bg-subtle: #0e1118;
+  --prs-primary: #7c8ef5;
+  --prs-primary-soft: #a5b2ff;
+  --prs-primary-faint: rgba(124, 142, 245, 0.15);
+  --prs-accent-warm: #e8953a;
+  --prs-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --prs-shadow-md: 0 8px 28px rgba(0, 0, 0, 0.45);
+  --prs-shadow-lg: 0 24px 56px rgba(0, 0, 0, 0.55);
+  --prs-glow: 0 8px 24px rgba(124, 142, 245, 0.2);
+  color-scheme: dark;
 }
 
 #root.prs-root {
@@ -241,6 +241,41 @@
 
 .prs-card__cta:hover {
   text-decoration: underline;
+}
+
+/* Card actions */
+.prs-card__icon-btn {
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.55rem;
+  border: 1px solid var(--prs-border);
+  background: var(--prs-surface);
+  color: var(--prs-muted);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.prs-card__icon-btn:hover {
+  background: var(--prs-bg-subtle);
+  color: var(--prs-text);
+}
+
+.prs-card__icon-btn--active {
+  color: var(--prs-primary);
+  border-color: transparent;
+  background: var(--prs-primary-faint);
+}
+
+.prs-icon {
+  width: 1.05rem;
+  height: 1.05rem;
+  display: block;
 }
 
 /* Banner */
