@@ -1,21 +1,21 @@
-import { useMemo, useState } from 'react'
-import { ProjectCard } from '../components/project/ProjectCard'
-import { categories, projects } from '../data/projects'
+import { useMemo, useState } from "react";
+import { ProjectCard } from "../components/project/ProjectCard";
+import { categories, projects } from "../data/projects";
 
 export function ProjectsPage() {
-  const [active, setActive] = useState('All')
+  const [active, setActive] = useState("All");
 
   const filtered = useMemo(() => {
-    if (active === 'All') return projects
-    return projects.filter((p) => p.category === active)
-  }, [active])
+    if (active === "All") return projects;
+    return projects.filter((p) => p.category === active);
+  }, [active]);
 
   return (
     <>
       <h1 className="prs-page-title">Projects</h1>
       <p className="prs-page-lead">
-        Filter by discipline. Each card shows duration, team shape, and a match score derived from
-        your preferences.
+        Filter by discipline. Each card shows duration, team shape, and a match
+        score derived from your preferences.
       </p>
 
       <div className="prs-filters" role="group" aria-label="Category">
@@ -23,7 +23,7 @@ export function ProjectsPage() {
           <button
             key={c}
             type="button"
-            className={`prs-chip${c === active ? ' prs-chip--active' : ''}`}
+            className={`prs-chip${c === active ? " prs-chip--active" : ""}`}
             onClick={() => setActive(c)}
           >
             {c}
@@ -40,5 +40,5 @@ export function ProjectsPage() {
         <p className="prs-page-lead">No projects in this category yet.</p>
       )}
     </>
-  )
+  );
 }
