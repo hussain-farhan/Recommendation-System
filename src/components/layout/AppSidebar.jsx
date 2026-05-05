@@ -1,4 +1,4 @@
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 
 const nav = [
   { to: '/dashboard', label: 'Dashboard', end: true },
@@ -9,8 +9,15 @@ const nav = [
 ]
 
 export function AppSidebar({ onNavigate, theme, onToggleTheme }) {
+  const navigate = useNavigate()
   const linkClass = ({ isActive }) =>
     `prs-sidebar__link${isActive ? ' prs-sidebar__link--active' : ''}`
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    navigate('/login')
+  }
 
   return (
     <aside className="prs-sidebar" aria-label="Main navigation">
@@ -46,6 +53,14 @@ export function AppSidebar({ onNavigate, theme, onToggleTheme }) {
           style={{ width: '100%', textAlign: 'left' }}
         >
           Dark Mode
+        </button>
+        <button
+          type="button"
+          className="prs-sidebar__link"
+          onClick={handleLogout}
+          style={{ width: '100%', textAlign: 'left', marginTop: '0.25rem', color: '#ef4444' }}
+        >
+          Logout
         </button>
         <p className="prs-sidebar__hint" style={{ marginTop: '0.75rem' }}>
           Theme: <strong style={{ color: 'var(--prs-text)' }}>{theme}</strong>
