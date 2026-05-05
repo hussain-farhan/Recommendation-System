@@ -1,19 +1,25 @@
 import mongoose from "mongoose";
 
+let memoryServer;
+
 export async function connectDB() {
   mongoose.set("strictQuery", true);
 
-  const uri = process.env.MONGO_URI;
-
-  if (!uri) {
-    const err = new Error(
-      "MONGO_URI is required. Add it to backend/.env (or use MongoDB Atlas)."
-    );
-    err.status = 500;
-    throw err;
-  }
+  let uri = process.env.MONGO_URI;
 
   try {
+    if (!uri) {
+      // No local MongoDB required: start an in-memory server for development.
+      const { MongoMemoryServer } = await import("mongodb-memory-server");
+      memoryServer = await MongoMemoryServer.create();
+      uri = memoryServer.getUri("webProject");
+
+      // eslint-disable-next-line no-console
+      console.warn(
+        `MONGO_URI is not set; using in-memory MongoDB (${uri}). Data resets on restart.`
+      );
+    }
+
     await mongoose.connect(uri, {
       serverSelectionTimeoutMS: 5000,
     });
@@ -30,5 +36,13 @@ export async function connectDB() {
     const err = new Error(`MongoDB connection failed: ${msg}. ${hint}`);
     err.status = 500;
     throw err;
+  }
+}
+
+export async function disconnectDB() {
+  await mongoose.disconnect();
+  if (memoryServer) {
+    await memoryServer.stop();
+    memoryServer = undefined;
   }
 }
