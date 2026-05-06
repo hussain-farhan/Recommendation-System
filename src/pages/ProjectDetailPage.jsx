@@ -1,11 +1,51 @@
-import { Link, useParams } from 'react-router-dom'
-import { getProjectById } from '../data/projects'
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { fetchProjectById } from "../data/projects";
 
 export function ProjectDetailPage() {
-  const { id } = useParams()
-  const project = id ? getProjectById(id) : undefined
+  const { id } = useParams();
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
-  if (!project) {
+  useEffect(() => {
+    let mounted = true;
+    if (!id) {
+      setLoading(false);
+      setNotFound(true);
+      return;
+    }
+
+    setLoading(true);
+    setNotFound(false);
+
+    fetchProjectById(id)
+      .then((p) => {
+        if (!mounted) return;
+        setProject(p);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (!mounted) return;
+        const msg = String(err?.message || err);
+        setNotFound(msg.toLowerCase().includes("not found"));
+        setLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="prs-empty">
+        <h1>Loading…</h1>
+      </div>
+    );
+  }
+
+  if (!project || notFound) {
     return (
       <div className="prs-empty">
         <h1>Project not found</h1>
@@ -63,5 +103,5 @@ export function ProjectDetailPage() {
         </Link>
       </div>
     </article>
-  )
+  );
 }

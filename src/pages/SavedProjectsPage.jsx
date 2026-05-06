@@ -1,15 +1,27 @@
-import { ProjectCard } from '../components/project/ProjectCard'
-import { projects } from '../data/projects'
-import { readSavedProjectIds, toggleSavedProjectId } from '../utils/savedProjects'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from "react";
+import { ProjectCard } from "../components/project/ProjectCard";
+import { fetchProjects } from "../data/projects";
+import { readSavedProjectIds, toggleSavedProjectId } from "../utils/savedProjects";
 
 export function SavedProjectsPage() {
-  const [savedIds, setSavedIds] = useState(() => readSavedProjectIds())
+  const [savedIds, setSavedIds] = useState(() => readSavedProjectIds());
+  const [projects, setProjects] = useState([]);
+
+  useEffect(() => {
+    let mounted = true;
+    fetchProjects()
+      .then((list) => mounted && setProjects(list))
+      // eslint-disable-next-line no-console
+      .catch((err) => console.error(err));
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const savedProjects = useMemo(() => {
-    const set = new Set(savedIds)
-    return projects.filter((p) => set.has(p.id))
-  }, [savedIds])
+    const set = new Set(savedIds);
+    return projects.filter((p) => set.has(p.id));
+  }, [savedIds, projects]);
 
   return (
     <>
@@ -32,5 +44,5 @@ export function SavedProjectsPage() {
         <p className="prs-page-lead">No saved projects yet. Bookmark a project to see it here.</p>
       )}
     </>
-  )
+  );
 }

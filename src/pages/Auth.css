@@ -7,6 +7,7 @@
               var(--bg);
   padding: 20px;
   box-sizing: border-box;
+  color: var(--text);
 }
 
 .auth-card {
@@ -21,6 +22,7 @@
   animation: fadeIn 0.5s ease-out;
   position: relative;
   overflow: hidden;
+  color: var(--text);
 }
 
 /* Optional glassmorphism touch */
@@ -85,6 +87,20 @@
   font-size: 15px;
   transition: all 0.2s ease;
   box-sizing: border-box;
+}
+
+.auth-form-group input::placeholder {
+  color: var(--text);
+  opacity: 0.75;
+}
+
+.auth-form-group input:-webkit-autofill,
+.auth-form-group input:-webkit-autofill:hover,
+.auth-form-group input:-webkit-autofill:focus,
+.auth-form-group input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--text-h);
+  transition: background-color 9999s ease-in-out 0s;
+  caret-color: var(--text-h);
 }
 
 .auth-form-group input:focus {

@@ -4,13 +4,19 @@ import { AppHeader } from '../components/layout/AppHeader'
 import { AppSidebar } from '../components/layout/AppSidebar'
 import './MainLayout.css'
 
-const THEME_KEY = 'prs-theme'
+const PRS_THEME_KEY = 'prs-theme'
+const PM_THEME_KEY = 'projectmatch-theme'
 
 function readStoredTheme() {
   if (typeof window === 'undefined') return 'light'
-  const stored = localStorage.getItem(THEME_KEY)
+
+  // Keep old/new keys in sync so toggling dark mode on any page keeps the app consistent.
+  const storedPrs = localStorage.getItem(PRS_THEME_KEY)
+  const storedPm = localStorage.getItem(PM_THEME_KEY)
+  const stored = storedPrs ?? storedPm
   if (stored === 'dark' || stored === 'light') return stored
-  return 'light'
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
 export function MainLayout() {
@@ -38,8 +44,13 @@ export function MainLayout() {
   }, [sidebarOpen])
 
   useEffect(() => {
+    // Dashboard CSS reads `data-prs-theme`, while landing reads `data-pm-theme`.
     document.documentElement.dataset.prsTheme = theme
-    localStorage.setItem(THEME_KEY, theme)
+    document.documentElement.dataset.pmTheme = theme
+
+    // Persist to both keys for backward compatibility with older toggles.
+    localStorage.setItem(PRS_THEME_KEY, theme)
+    localStorage.setItem(PM_THEME_KEY, theme)
   }, [theme])
 
   useEffect(() => {

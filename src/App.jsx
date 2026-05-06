@@ -1,4 +1,4 @@
-import { BrowserRouter, Link, Navigate, Route, Routes, Outlet } from 'react-router-dom'
+import { BrowserRouter, Link, Navigate, Route, Routes, Outlet, useLocation } from 'react-router-dom'
 import { MainLayout } from './layouts/MainLayout'
 import { LandingPage } from './pages/LandingPage'
 import { OnboardingPage } from './pages/OnboardingPage'
@@ -25,33 +25,41 @@ function NotFoundPage() {
 }
 
 function ProtectedRoute() {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token')
+  const location = useLocation()
   if (!token) {
-    return <Navigate to="/login" replace />;
+    const redirect = `${location.pathname}${location.search}${location.hash}`
+    return <Navigate to={`/login?redirect=${encodeURIComponent(redirect)}`} replace />
   }
-  return <Outlet />;
+  return <Outlet />
 }
 
 function PublicRoute() {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token')
   if (token) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/dashboard" replace />
   }
-  return <Outlet />;
+  return <Outlet />
 }
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Default entry */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="landing" element={<Navigate to="/" replace />} />
+
+        {/* Auth screens */}
         <Route element={<PublicRoute />}>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="landing" element={<LandingPage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
         </Route>
-        
-        <Route path="onboarding" element={<OnboardingPage />} />
+
+        {/* Onboarding requires login but doesn't use MainLayout */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="onboarding" element={<OnboardingPage />} />
+        </Route>
         
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>

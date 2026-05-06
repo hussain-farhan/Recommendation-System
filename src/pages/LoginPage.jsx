@@ -1,6 +1,19 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useMemo, useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import './Auth.css';
+
+function getSafeRedirect(raw) {
+  if (!raw) return null
+  try {
+    const decoded = decodeURIComponent(raw)
+    // only allow internal redirects
+    if (!decoded.startsWith('/')) return null
+    if (decoded.startsWith('//')) return null
+    return decoded
+  } catch {
+    return null
+  }
+}
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
@@ -8,6 +21,12 @@ export function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation()
+
+  const redirectTarget = useMemo(() => {
+    const redirectParam = new URLSearchParams(location.search).get('redirect')
+    return getSafeRedirect(redirectParam) ?? '/dashboard'
+  }, [location.search])
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -29,7 +48,7 @@ export function LoginPage() {
 
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
-      navigate('/dashboard');
+      navigate(redirectTarget, { replace: true })
     } catch (err) {
       setError(err.message);
     } finally {
@@ -76,7 +95,13 @@ export function LoginPage() {
         </form>
 
         <div className="auth-footer">
-          Don't have an account? <Link to="/register" className="auth-link">Sign up</Link>
+          Don't have an account?{' '}
+          <Link
+            to={`/register?redirect=${encodeURIComponent(redirectTarget)}`}
+            className="auth-link"
+          >
+            Sign up
+          </Link>
         </div>
       </div>
     </div>

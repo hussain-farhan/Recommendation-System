@@ -1,14 +1,26 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ProjectCard } from "../components/project/ProjectCard";
-import { categories, projects } from "../data/projects";
+import { categories, fetchProjects } from "../data/projects";
 
 export function ProjectsPage() {
   const [active, setActive] = useState("All");
+  const [projects, setProjects] = useState([]);
+
+  useEffect(() => {
+    let mounted = true;
+    fetchProjects(active)
+      .then((list) => mounted && setProjects(list))
+      // eslint-disable-next-line no-console
+      .catch((err) => console.error(err));
+    return () => {
+      mounted = false;
+    };
+  }, [active]);
 
   const filtered = useMemo(() => {
     if (active === "All") return projects;
     return projects.filter((p) => p.category === active);
-  }, [active]);
+  }, [active, projects]);
 
   return (
     <>

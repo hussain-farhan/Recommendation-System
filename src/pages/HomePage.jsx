@@ -1,11 +1,30 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { RecommendationBanner } from "../components/project/RecommendationBanner";
 import { ProjectCard } from "../components/project/ProjectCard";
-import { getRecommended, projects } from "../data/projects";
+import { fetchProjects, fetchRecommendedProjects } from "../data/projects";
 import FAQSection from "../components/landing/FAQSection";
 
 export function HomePage() {
-  const top = getRecommended(3);
+  const [top, setTop] = useState([]);
+  const [projectCount, setProjectCount] = useState(0);
+
+  useEffect(() => {
+    let mounted = true;
+
+    Promise.all([fetchRecommendedProjects(3), fetchProjects()])
+      .then(([recommended, all]) => {
+        if (!mounted) return;
+        setTop(recommended);
+        setProjectCount(all.length);
+      })
+      // eslint-disable-next-line no-console
+      .catch((err) => console.error(err));
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <>
@@ -17,7 +36,7 @@ export function HomePage() {
 
       <div className="prs-stats" aria-label="Summary">
         <div className="prs-stat">
-          <span className="prs-stat__value">{projects.length}</span>
+          <span className="prs-stat__value">{projectCount}</span>
           <span className="prs-stat__label">Active briefs</span>
         </div>
         <div className="prs-stat">
