@@ -5,6 +5,10 @@ import { Project } from "../models/Project.js";
 import { projects as initialProjects } from "../../../src/data/projects.mock.js";
 
 export async function seedDB() {
+  if (process.env.USE_MOCK_DATA === "true") {
+    return { seeded: false, count: initialProjects.length };
+  }
+
   const count = await Project.estimatedDocumentCount();
   if (count > 0) return { seeded: false, count };
 

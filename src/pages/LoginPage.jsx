@@ -1,109 +1,91 @@
-import { useMemo, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import './Auth.css';
-
-function getSafeRedirect(raw) {
-  if (!raw) return null
-  try {
-    const decoded = decodeURIComponent(raw)
-    // only allow internal redirects
-    if (!decoded.startsWith('/')) return null
-    if (decoded.startsWith('//')) return null
-    return decoded
-  } catch {
-    return null
-  }
-}
+import { useState } from 'react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { api } from '../api'
+import './auth.css'
 
 export function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const { login } = useAuth()
+  const navigate = useNavigate()
   const location = useLocation()
+  const from = location.state?.from || '/dashboard'
 
-  const redirectTarget = useMemo(() => {
-    const redirectParam = new URLSearchParams(location.search).get('redirect')
-    return getSafeRedirect(redirectParam) ?? '/dashboard'
-  }, [location.search])
+  const [form, setForm] = useState({ email: '', password: '' })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+  const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
 
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || 'Failed to login');
-      }
-
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      navigate(redirectTarget, { replace: true })
+      const data = await api.auth.login(form)
+      login(data.user, data.token)
+      navigate(from, { replace: true })
     } catch (err) {
-      setError(err.message);
+      setError(err.message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
-    <div className="auth-container">
+    <div className="auth-page">
       <div className="auth-card">
-        <h1 className="auth-title">Welcome back</h1>
-        <p className="auth-subtitle">Log in to your account to continue</p>
+        <div className="auth-card__brand">
+          <Link to="/" className="pm-brand" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
+            <span style={{ width: 28, height: 28, borderRadius: 8, background: 'var(--prs-primary)', display: 'inline-block' }} aria-hidden="true" />
+            <span style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--prs-text)' }}>ProjectMatch</span>
+          </Link>
+        </div>
 
-        {error && <div className="auth-error">{error}</div>}
+        <h1 className="auth-card__title">Welcome back</h1>
+        <p className="auth-card__sub">Sign in to your account to continue</p>
 
-        <form className="auth-form" onSubmit={handleLogin}>
-          <div className="auth-form-group">
-            <label htmlFor="email">Email address</label>
+        {error && <p className="auth-error" role="alert">{error}</p>}
+
+        <form onSubmit={handleSubmit} className="auth-form" noValidate>
+          <label className="auth-label">
+            Email address
             <input
-              id="email"
               type="email"
+              className="prs-input auth-input"
+              value={form.email}
+              onChange={set('email')}
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
+              autoComplete="email"
+              autoFocus
             />
-          </div>
+          </label>
 
-          <div className="auth-form-group">
-            <label htmlFor="password">Password</label>
+          <label className="auth-label">
+            Password
             <input
-              id="password"
               type="password"
+              className="prs-input auth-input"
+              value={form.password}
+              onChange={set('password')}
               required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              autoComplete="current-password"
             />
-          </div>
+          </label>
 
-          <button type="submit" className="auth-button" disabled={loading}>
-            {loading ? 'Logging in...' : 'Log in'}
+          <button
+            type="submit"
+            className="prs-button prs-button--primary auth-submit"
+            disabled={loading}
+          >
+            {loading ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
 
-        <div className="auth-footer">
-          Don't have an account?{' '}
-          <Link
-            to={`/register?redirect=${encodeURIComponent(redirectTarget)}`}
-            className="auth-link"
-          >
-            Sign up
-          </Link>
-        </div>
+        <p className="auth-card__footer">
+          Don&apos;t have an account?{' '}
+          <Link to="/signup" className="auth-link">Create one</Link>
+        </p>
       </div>
     </div>
-  );
+  )
 }

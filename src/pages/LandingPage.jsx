@@ -4,32 +4,14 @@ import { FeatureSection } from '../components/landing/FeatureSection'
 import { TestimonialsSection } from '../components/landing/TestimonialsSection'
 import { FooterSection } from '../components/landing/FooterSection'
 import './LandingPage.css'
-
-const PRS_THEME_KEY = 'prs-theme'
-const PM_THEME_KEY = 'projectmatch-theme'
-
-function readStoredTheme() {
-  if (typeof window === 'undefined') return 'light'
-  // Keep old/new keys in sync so toggling dark mode on any page keeps the app consistent.
-  const storedPrs = localStorage.getItem(PRS_THEME_KEY)
-  const storedPm = localStorage.getItem(PM_THEME_KEY)
-  const stored = storedPrs ?? storedPm
-  if (stored === 'dark' || stored === 'light') return stored
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-}
+import { applyThemeToDocument, readStoredTheme } from '../utils/theme.js'
 
 export function LandingPage() {
-  const [theme, setTheme] = useState(readStoredTheme)
+  const [theme, setTheme] = useState(() => readStoredTheme())
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
 
   useEffect(() => {
-    // Landing CSS reads `data-pm-theme`, while the dashboard reads `data-prs-theme`.
-    document.documentElement.dataset.pmTheme = theme
-    document.documentElement.dataset.prsTheme = theme
-
-    // Persist to both keys for backward compatibility.
-    localStorage.setItem(PM_THEME_KEY, theme)
-    localStorage.setItem(PRS_THEME_KEY, theme)
+    applyThemeToDocument(theme)
   }, [theme])
 
   useEffect(() => {
@@ -78,10 +60,10 @@ export function LandingPage() {
             >
               {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
             </button>
-            <Link to="/login?redirect=%2Fdashboard" className="pm-link-btn">
+            <Link to="/login" className="pm-link-btn">
               Sign In
             </Link>
-            <Link to="/login?redirect=%2Fonboarding" className="pm-btn pm-btn--solid">
+            <Link to="/onboarding" className="pm-btn pm-btn--solid">
               Get Started
             </Link>
           </div>
@@ -113,10 +95,10 @@ export function LandingPage() {
           <a className="pm-drawer__link" href="#contact" onClick={closeMobile}>
             Contact
           </a>
-          <Link to="/login?redirect=%2Fdashboard" className="pm-link-btn pm-drawer__link" onClick={closeMobile}>
+          <Link to="/login" className="pm-link-btn pm-drawer__link" onClick={closeMobile}>
             Sign In
           </Link>
-          <Link to="/login?redirect=%2Fonboarding" className="pm-btn pm-btn--solid pm-btn--block" onClick={closeMobile}>
+          <Link to="/onboarding" className="pm-btn pm-btn--solid pm-btn--block" onClick={closeMobile}>
             Get Started
           </Link>
         </div>
@@ -145,7 +127,7 @@ export function LandingPage() {
             </p>
 
             <div className="pm-hero__ctas">
-              <Link to="/login?redirect=%2Fonboarding" className="pm-btn pm-btn--gradient">
+              <Link to="/onboarding" className="pm-btn pm-btn--gradient">
                 Start Your Journey <span aria-hidden="true">→</span>
               </Link>
               <Link to="/projects" className="pm-btn pm-btn--outline">
