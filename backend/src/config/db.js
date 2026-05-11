@@ -13,8 +13,11 @@ export async function connectDB() {
 
   try {
     await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 10000,
     });
+
+    // Real DB: projects + auth must not stay in mock mode (e.g. stray USE_MOCK_DATA on the host).
+    process.env.USE_MOCK_DATA = "false";
 
     // eslint-disable-next-line no-console
     console.log("MongoDB connected");

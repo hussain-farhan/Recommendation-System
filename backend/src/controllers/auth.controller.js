@@ -4,7 +4,7 @@ import { User } from "../models/User.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey_change_me";
 
-// In-memory store used when MONGO_URI is not set (mock mode)
+// In-memory store when USE_MOCK_DATA=true (no MongoDB / tests)
 const mockUsers = new Map();
 
 function isMock() {
