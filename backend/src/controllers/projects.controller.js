@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Project } from "../models/Project.js";
-import { projects as mockProjects } from "../../../src/data/projects.mock.js";
+import { projects as mockProjects } from "../../../frontend/src/data/projects.mock.js";
 
 function sortByMatchScoreDesc(items) {
   return [...items].sort((a, b) => Number(b.matchScore || 0) - Number(a.matchScore || 0));

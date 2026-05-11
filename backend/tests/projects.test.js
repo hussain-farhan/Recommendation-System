@@ -31,7 +31,7 @@
 
 import request from 'supertest'
 import { app } from '../src/app.js'
-import { projects } from '../../src/data/projects.mock.js'
+import { projects } from '../../frontend/src/data/projects.mock.js'
 
 process.env.USE_MOCK_DATA = 'true'
 
