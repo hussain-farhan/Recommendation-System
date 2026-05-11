@@ -1,30 +1,34 @@
 import { config } from "dotenv";
+import cors from "cors";
 import { app } from "./src/app.js";
 import { connectDB } from "./src/config/db.js";
 import { seedDB } from "./src/utils/seedDB.js";
 
 config();
 
-const PORT = Number(process.env.PORT || 5000);
+// Register CORS middleware BEFORE starting the server
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  credentials: true,
+}));
+
+const PORT = process.env.PORT || 5000;
 
 async function start() {
   await connectDB();
-  const seed = await seedDB();
 
+  const seed = await seedDB();
   if (seed.seeded) {
-    // eslint-disable-next-line no-console
     console.log(`Seeded Projects collection (${seed.count} docs)`);
   }
 
+  // Only ONE app.listen — after DB is ready
   app.listen(PORT, () => {
-    // eslint-disable-next-line no-console
-    console.log(`API listening on http://localhost:${PORT}`);
+    console.log(`API listening on port ${PORT}`);
   });
 }
 
 start().catch((err) => {
-  // eslint-disable-next-line no-console
   console.error(err);
   process.exit(1);
 });
-

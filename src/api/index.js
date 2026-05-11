@@ -1,4 +1,6 @@
-const API_BASE = '/api'
+/** In production, set VITE_API_ORIGIN=https://your-service.onrender.com (no trailing slash). */
+const API_ORIGIN = (import.meta.env.VITE_API_ORIGIN || '').replace(/\/$/, '')
+const API_BASE = API_ORIGIN ? `${API_ORIGIN}/api` : '/api'
 
 async function apiFetch(path, options = {}) {
   const token = localStorage.getItem('prs_token')

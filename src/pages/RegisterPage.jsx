@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import './Auth.css';
+import { useAuth } from '../context/AuthContext'
+import { api } from '../api'
+import './Auth.css'
 
 function getSafeRedirect(raw) {
   if (!raw) return null
@@ -16,6 +18,7 @@ function getSafeRedirect(raw) {
 }
 
 export function RegisterPage() {
+  const { login } = useAuth()
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,20 +38,8 @@ export function RegisterPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || 'Failed to register');
-      }
-
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      const data = await api.auth.register({ name, email, password })
+      login(data.user, data.token)
       navigate(redirectTarget, { replace: true })
     } catch (err) {
       setError(err.message);
