@@ -10,8 +10,9 @@ export default defineConfig({
   ],
   server: {
     proxy: {
+      // Keep target aligned with DEFAULT_API_ORIGIN in src/api/index.js
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'https://recommendation-system-rppp.onrender.com',
         changeOrigin: true,
       },
     },

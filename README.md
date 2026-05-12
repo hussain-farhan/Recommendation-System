@@ -1,18 +1,16 @@
-# React + Vite
+# ProjectMatch
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Monorepo layout:
 
-Currently, two official plugins are available:
+- **`frontend`** — React (Vite) app. Run `npm install` and `npm run dev` from this folder. The dev server proxies `/api` to `http://localhost:5000`.
+- **`backend`** — Express API. Run `npm install` and `npm run dev` from this folder (default port per your `server.js` / `.env`).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Start the backend first (or ensure it is on the port the frontend proxy expects), then start the frontend.
 
-## React Compiler
+## Deploy backend on Render
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
-
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. Create a **Web Service** and point it at this repo.
+2. Set **Root Directory** to the folder that contains this backend `package.json` (for this monorepo, that is `webProject/backend` if the repo root is `webProject`, or `backend` if the repo root already is the backend folder).
+3. **Build Command:** `npm install && npm run build` (or `npm install; npm run build` — both work). The `build` script is a no-op success step so Render’s default pipeline passes; the API is plain Node.js with no compile step.
+4. **Start Command:** `npm start`
+5. **Environment variables** (in the Render dashboard): set `MONGO_URI` to your MongoDB connection string if you use a database; if it is unset, the app runs in mock project mode. Set `FRONTEND_URL` to your deployed site URL (for example `https://your-app.vercel.app`) so `server.js` CORS settings match your frontend. `PORT` is provided automatically by Render.

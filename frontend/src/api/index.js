@@ -1,5 +1,13 @@
-/** In production, set VITE_API_ORIGIN=https://your-service.onrender.com (no trailing slash). */
-const API_ORIGIN = (import.meta.env.VITE_API_ORIGIN || '').replace(/\/$/, '')
+/**
+ * - Local dev: empty origin → fetch `/api` (Vite proxies to `server.proxy` in vite.config.js).
+ * - Production: uses VITE_API_ORIGIN if set, otherwise the default below (same host as the dev proxy).
+ *   Set VITE_API_ORIGIN in the host’s env if your API lives elsewhere.
+ */
+const DEFAULT_API_ORIGIN = 'https://recommendation-system-rppp.onrender.com'
+const API_ORIGIN = (
+  import.meta.env.VITE_API_ORIGIN?.trim() ||
+  (import.meta.env.DEV ? '' : DEFAULT_API_ORIGIN)
+).replace(/\/$/, '')
 const API_BASE = API_ORIGIN ? `${API_ORIGIN}/api` : '/api'
 
 async function apiFetch(path, options = {}) {
