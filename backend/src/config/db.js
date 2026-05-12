@@ -28,8 +28,10 @@ export async function connectDB() {
         ? "MongoDB is not reachable. Start MongoDB (or point MONGO_URI to MongoDB Atlas) then retry."
         : "Check that MONGO_URI is correct and MongoDB is running.";
 
-    const err = new Error(`MongoDB connection failed: ${msg}. ${hint}`);
-    err.status = 500;
-    throw err;
+    process.env.USE_MOCK_DATA = "true";
+    // eslint-disable-next-line no-console
+    console.warn(
+      `MongoDB connection failed (${msg}). Falling back to mock data mode. ${hint}`
+    );
   }
 }
